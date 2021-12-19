@@ -1,0 +1,16 @@
+version: '3'
+services:
+  PTAANG_CONTAINER:
+    container_name: 'LABORATORIO_DB'
+    image: 'postgres:latest'
+    ports:
+      - '5433:5432'
+    volumes:
+      - /data/postgres:/data/postgres
+    env_file:
+      - docker.env
+    networks:
+      - postgres
+networks:
+  postgres:
+    driver: bridge
