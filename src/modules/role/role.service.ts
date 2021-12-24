@@ -36,8 +36,10 @@ export class RoleService {
     }
   }
 
-  remove(id: number) {
-    return `NOT IMPLEMENT: This action removes a #${id} role`;
+  async remove(id: number) {
+    const role = await this.roleRepository.findOne(id);
+    await this.roleRepository.delete(id);
+    return role;
   }
 
   findByCode(code: string) {
