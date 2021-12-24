@@ -88,4 +88,16 @@ export class UserService {
       relations: ['role', 'profile'],
     });
   }
+
+  async changeStatus(id: number) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+      select: ['id', 'name', 'email', 'status', 'createdAt', 'updatedAt'],
+      relations: ['role', 'profile'],
+    });
+    user.status =
+      user.status === UserStatus.ACTIVE ? UserStatus.DELETE : UserStatus.ACTIVE;
+    const res = await this.userRepository.save(user);
+    return { ...res, role: res.role.code };
+  }
 }

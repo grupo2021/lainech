@@ -40,6 +40,11 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
+  @Post('changestatus/:id')
+  changeStatus(@Param() params: FindOneUserDto) {
+    return this.userService.changeStatus(params.id);
+  }
+
   @Get(':id')
   @Roles(RoleOptions.Admin)
   @UseGuards(RolesGuard)
