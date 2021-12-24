@@ -12,6 +12,7 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ClientsModule } from './modules/clients/clients.module';
+import { LoteModule } from './modules/lote/lote.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ClientsModule } from './modules/clients/clients.module';
     CategoriesModule,
     ProductsModule,
     ClientsModule,
+    LoteModule,
   ],
   controllers: [AppController],
   providers: [AppService],
