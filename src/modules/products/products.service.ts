@@ -66,7 +66,9 @@ export class ProductsService {
   }
 
   findOne(id: number) {
-    return this.productRepository.findOne(id, { relations: ['category'] });
+    return this.productRepository.findOne(id, {
+      relations: ['category', 'lotes'],
+    });
   }
 
   async update(

@@ -15,14 +15,8 @@ export class Product extends GenericEntity {
   @Column()
   description: string;
 
-  @Column()
-  basePrice: number;
-
-  @Column()
-  salePrice: number;
-
-  @Column()
-  stock: number;
+  @Column({ default: 50 })
+  profit: number;
 
   @Column()
   image: string;

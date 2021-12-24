@@ -13,13 +13,7 @@ export class UpdateProductDto {
   description: string;
 
   @IsNotEmpty()
-  basePrice: number;
-
-  @IsNotEmpty()
-  salePrice: number;
-
-  @IsNotEmpty()
-  stock: number;
+  profit: number;
 
   @IsNotEmpty()
   @ExistsOnDatabase(Category)
