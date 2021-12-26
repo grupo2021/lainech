@@ -6,6 +6,7 @@ import { Role } from '../modules/role/entities/role.entity';
 import { User } from '../modules/user/entities/user.entity';
 import { PasswordEncrypter } from '../utils/password-encrypter';
 import { Profile } from 'src/modules/profile/entities/profile.entity';
+import { RoleCode } from 'src/modules/role/role.service';
 
 const setDefaultData = async (configService: ConfigService) => {
   const roleRepository = getRepository<Role>(Role);
@@ -15,49 +16,49 @@ const setDefaultData = async (configService: ConfigService) => {
   let roleAdmin = await roleRepository
     .createQueryBuilder()
     .where('code = :code', {
-      code: 'ADMIN',
+      code: RoleCode.ADMIN,
     })
     .getOne();
 
   if (!roleAdmin) {
     const newAdminRole = roleRepository.create({
       name: 'Administrador',
-      code: 'ADMIN',
+      code: RoleCode.ADMIN,
       description: 'Puede hacer todo',
     });
     roleAdmin = await roleRepository.save(newAdminRole);
   }
 
-  let roleDealer = await roleRepository
+  let promotorRole = await roleRepository
     .createQueryBuilder()
     .where('code = :code', {
-      code: 'DEALER',
+      code: RoleCode.PROMOTOR,
     })
     .getOne();
 
-  if (!roleDealer) {
-    const newDealerRole = roleRepository.create({
-      name: 'Distribuidor',
-      code: 'DEALER',
-      description: 'This is a dealer',
+  if (!promotorRole) {
+    const newPromotorRole = roleRepository.create({
+      name: 'Promotor',
+      code: RoleCode.PROMOTOR,
+      description: 'Realiza ventas hacia los clietes',
     });
-    roleDealer = await roleRepository.save(newDealerRole);
+    promotorRole = await roleRepository.save(newPromotorRole);
   }
 
-  const roleUser = await roleRepository
+  const almaceneroRole = await roleRepository
     .createQueryBuilder()
     .where('code = :code', {
-      code: 'USER',
+      code: RoleCode.ALMACENERO,
     })
     .getOne();
 
-  if (!roleUser) {
-    const newRoleUser = roleRepository.create({
+  if (!almaceneroRole) {
+    const newalmaceneroRole = roleRepository.create({
       name: 'Usuario',
-      code: 'USER',
-      description: 'usuario restringido',
+      code: RoleCode.ALMACENERO,
+      description: 'Maneja inventarios',
     });
-    await roleRepository.save(newRoleUser);
+    await roleRepository.save(newalmaceneroRole);
   }
 
   const user = await userRepository

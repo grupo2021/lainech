@@ -23,7 +23,7 @@ export class UserService {
     if (createUserDto.roleId) {
       newUser.role = await this.roleService.findOne(createUserDto.roleId);
     } else {
-      newUser.role = await this.roleService.findByCode(RoleCode.DEALER);
+      newUser.role = await this.roleService.findByCode(RoleCode.PROMOTOR);
     }
     newUser.password = PasswordEncrypter.encrypt(createUserDto.password);
     newUser.profile = profile;

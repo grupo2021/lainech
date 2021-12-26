@@ -5,8 +5,8 @@ import { RoleRepository } from './role.repository';
 
 export enum RoleCode {
   ADMIN = 'ADMIN',
-  USER = 'USER',
-  DEALER = 'DEALER',
+  ALMACENERO = 'ALMACENERO',
+  PROMOTOR = 'PROMOTOR',
 }
 
 @Injectable()
