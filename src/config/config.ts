@@ -26,9 +26,9 @@ export const config = () => ({
   database: {
     type: 'postgres',
     // descomentar para mandar a produccion
-    // ssl: {
-    //   rejectUnauthorized: false,
-    // },
+    ssl: {
+      rejectUnauthorized: false,
+    },
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     username: process.env.DB_USERNAME,
@@ -41,7 +41,7 @@ export const config = () => ({
     /** Recursos
      *  * https://typeorm.io/#/migrations
      */
-    // migrationsRun: true,
+    migrationsRun: true,
     migrations: [join(__dirname, '../database/migrations/**/*{.ts,.js}')],
     migrationsTableName: 'custom_migration_table',
     cli: {
