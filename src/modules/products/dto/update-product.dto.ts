@@ -10,6 +10,9 @@ export class UpdateProductDto {
   code: string;
 
   @IsNotEmpty()
+  price: number;
+
+  @IsNotEmpty()
   description: string;
 
   @IsNotEmpty()

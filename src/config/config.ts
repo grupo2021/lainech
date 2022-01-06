@@ -25,10 +25,6 @@ export const config = () => ({
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
   database: {
     type: 'postgres',
-    // descomentar para mandar a produccion
-    ssl: {
-      rejectUnauthorized: false,
-    },
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10) || 5432,
     username: process.env.DB_USERNAME,
@@ -36,19 +32,18 @@ export const config = () => ({
     database: process.env.DB_DATABASE,
     entities: [join(__dirname, '../**/**/*.entity{.ts,.js}')],
     autoLoadEntities: true,
-
-    // Implementaremos Migrations.
-    /** Recursos
-     *  * https://typeorm.io/#/migrations
-     */
-    migrationsRun: true,
     migrations: [join(__dirname, '../database/migrations/**/*{.ts,.js}')],
     migrationsTableName: 'custom_migration_table',
     cli: {
       migrationsDir: 'src/database/migrations',
     },
-
-    // Activar SOLO MANUALMENTE en DESARROLLO SI ES NECESARIO (DESACTIVAR EN PRODUCCION).
     synchronize: false,
+
+    // DESCOMENTAR PARA MANDAR A PRODUCCION
+    // ssl: {
+    //   rejectUnauthorized: false,
+    // },
+    // migrationsRun: true,
+    // DESCOMENTAR PARA MANDAR A PRODUCCION
   },
 });

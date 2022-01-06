@@ -21,6 +21,9 @@ export class Product extends GenericEntity {
   @Column()
   image: string;
 
+  @Column({ default: 1 })
+  price: number;
+
   @ManyToOne(() => User, (user) => user.products)
   user: User;
 
