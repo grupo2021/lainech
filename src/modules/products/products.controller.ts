@@ -28,12 +28,12 @@ import { FindAllDto } from '../findAll.dto';
 import { FindOneProductDto } from './dto/find-one-product.dto';
 
 @Controller('products')
-@Roles(RoleOptions.Admin)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
+  @Roles(RoleOptions.Admin)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -56,12 +56,18 @@ export class ProductsController {
     return this.productsService.findAll(query);
   }
 
+  @Get('all/get')
+  findAllWithoutPagination() {
+    return this.productsService.findAllWithoutPagination();
+  }
+
   @Get(':id')
   findOne(@Param() findOneDto: FindOneProductDto) {
     return this.productsService.findOne(findOneDto.id);
   }
 
   @Put(':id')
+  @Roles(RoleOptions.Admin)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -80,6 +86,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @Roles(RoleOptions.Admin)
   remove(@Param() findOneDto: FindOneProductDto) {
     return this.productsService.remove(findOneDto.id);
   }

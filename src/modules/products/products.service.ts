@@ -65,6 +65,10 @@ export class ProductsService {
     return { data, count };
   }
 
+  findAllWithoutPagination() {
+    return this.productRepository.find({ relations: ['category'] });
+  }
+
   findOne(id: number) {
     return this.productRepository.findOne(id, {
       relations: ['category', 'lotes'],
