@@ -13,6 +13,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { LoteModule } from './modules/lote/lote.module';
+import { ReloadModule } from './modules/reload/reload.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { LoteModule } from './modules/lote/lote.module';
     ProductsModule,
     ClientsModule,
     LoteModule,
+    ReloadModule,
   ],
   controllers: [AppController],
   providers: [AppService],

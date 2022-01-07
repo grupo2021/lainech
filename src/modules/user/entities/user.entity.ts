@@ -13,6 +13,7 @@ import { PasswordEncrypter } from '../../../utils/password-encrypter';
 import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { Profile } from 'src/modules/profile/entities/profile.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
+import { Reload } from 'src/modules/reload/entities/reload.entity';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
@@ -38,6 +39,9 @@ export class User extends GenericEntity {
 
   @OneToMany(() => Product, (product) => product.user)
   products: Product[];
+
+  @OneToMany(() => Reload, (reload) => reload.user)
+  reloads: Reload[];
 
   @OneToOne(() => Profile, { cascade: true })
   @JoinColumn()
