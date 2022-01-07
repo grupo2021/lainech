@@ -10,6 +10,9 @@ export class Lote extends GenericEntity {
   @Column()
   cant: number;
 
+  @Column({ default: 0 })
+  cant_out: number;
+
   @Column()
   price: number;
 
