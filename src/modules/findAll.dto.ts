@@ -8,4 +8,5 @@ export class FindAllDto {
   sort: SortOrder;
   page: number;
   take: number;
+  column: string;
 }

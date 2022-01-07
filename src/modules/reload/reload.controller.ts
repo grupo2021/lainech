@@ -8,6 +8,7 @@ import {
   Delete,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { ReloadService } from './reload.service';
 import { CreateReloadDto } from './dto/create-reload.dto';
@@ -16,6 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/authorization/role.guard';
 import { RoleOptions, Roles } from '../auth/authorization/role.decorator';
 import { FindOneReloadDto } from './dto/find-one-reload.dto';
+import { FindAllDto } from '../findAll.dto';
 
 @Controller('reload')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -29,8 +31,8 @@ export class ReloadController {
   }
 
   @Get()
-  findAll() {
-    return this.reloadService.findAll();
+  findAllWithPagination(@Query() query: FindAllDto) {
+    return this.reloadService.findAllWithPagination(query);
   }
 
   @Get(':id')

@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { getConnection, Like } from 'typeorm';
+import { FindAllDto } from '../findAll.dto';
 import { ProductsRepository } from '../products/products.repository';
 import { UserRepository } from '../user/user.repository';
 import { CreateReloadDto } from './dto/create-reload.dto';
 import { UpdateReloadDto } from './dto/update-reload.dto';
+import { Reload } from './entities/reload.entity';
 import { ReloadDetail } from './entities/reload_detail.entity';
 import { ReloadRepository } from './reload.repository';
 import { ReloadDetailRepository } from './reload_detail.repository';
@@ -47,13 +50,45 @@ export class ReloadService {
     return this.reloadRepository.save(reload);
   }
 
-  async findAll() {
-    const reloads = await this.reloadRepository.find({ relations: ['user'] });
+  async findAllWithPagination(query: FindAllDto) {
+    const page = query.page || 0;
+    const keyword = query.keyword || '';
+    const take = query.take || 10;
+    const skip = page * take;
+    const sort = query.sort || 'DESC';
+    const column = query.column;
+    let columnOrder = '';
+    switch (column) {
+      case 'date':
+        columnOrder = 'reload.date';
+        break;
+      case 'promotor':
+        columnOrder = 'user.name';
+        break;
+      case 'total':
+        columnOrder = 'reload.total';
+        break;
+      case 'status':
+        columnOrder = 'reload.status';
+        break;
+      default:
+        columnOrder = 'reload.date';
+        break;
+    }
 
-    return reloads.map((r) => ({
-      ...r,
-      user: { id: r.user.id, name: r.user.name, email: r.user.email },
-    }));
+    const [data, count] = await getConnection()
+      .createQueryBuilder(Reload, 'reload')
+      .leftJoin('reload.user', 'user')
+      .where('user.name ILIKE :name', { name: `%${keyword.toUpperCase()}%` })
+      .addSelect('user.id')
+      .addSelect('user.name')
+      .addSelect('user.email')
+      .limit(take)
+      .offset(skip)
+      .orderBy(columnOrder, sort)
+      .getManyAndCount();
+
+    return { data, count };
   }
 
   async findOne(id: number) {
