@@ -5,8 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ReloadRepository } from './reload.repository';
 import { UserRepository } from '../user/user.repository';
 import { ProductsRepository } from '../products/products.repository';
-import { LoteRepository } from '../lote/lote.repository';
-import { ReloadDetail } from './entities/reload_detail.entity';
+import { ReloadDetailRepository } from './reload_detail.repository';
 
 @Module({
   imports: [
@@ -14,8 +13,7 @@ import { ReloadDetail } from './entities/reload_detail.entity';
       ReloadRepository,
       UserRepository,
       ProductsRepository,
-      LoteRepository,
-      ReloadDetail,
+      ReloadDetailRepository,
     ]),
   ],
   controllers: [ReloadController],

@@ -1,4 +1,11 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateReloadDto } from './create-reload.dto';
+import { RelationOptions } from 'typeorm';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { ReloadStatus } from '../entities/reload.entity';
 
-export class UpdateReloadDto extends PartialType(CreateReloadDto) {}
+export class UpdateReloadDto {
+  @IsNotEmpty()
+  @IsEnum(ReloadStatus, {
+    message: 'status must be ANULADO, PENDIENTE, APROBADO',
+  })
+  status: ReloadStatus;
+}
