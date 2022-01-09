@@ -7,6 +7,7 @@ import { UserRepository } from '../user/user.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { ReloadDetailRepository } from './reload_detail.repository';
 import { LoteRepository } from '../lote/lote.repository';
+import { PromotorProductRepository } from '../promotor-product/promotor-product.repository';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LoteRepository } from '../lote/lote.repository';
       ProductsRepository,
       ReloadDetailRepository,
       LoteRepository,
+      PromotorProductRepository,
     ]),
   ],
   controllers: [ReloadController],

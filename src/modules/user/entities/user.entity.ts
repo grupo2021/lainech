@@ -14,6 +14,7 @@ import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { Profile } from 'src/modules/profile/entities/profile.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
 import { Reload } from 'src/modules/reload/entities/reload.entity';
+import { PromotorProduct } from 'src/modules/promotor-product/entities/promotor-product.entity';
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
@@ -39,6 +40,11 @@ export class User extends GenericEntity {
 
   @OneToMany(() => Product, (product) => product.user)
   products: Product[];
+
+  @OneToMany(() => PromotorProduct, (promotorProduct) => promotorProduct.user, {
+    cascade: true,
+  })
+  promotorProducts: PromotorProduct[];
 
   @OneToMany(() => Reload, (reload) => reload.user)
   reloads: Reload[];

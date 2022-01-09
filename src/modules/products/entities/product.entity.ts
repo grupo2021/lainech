@@ -1,6 +1,7 @@
 import { Category } from 'src/modules/categories/entities/category.entity';
 import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { Lote } from 'src/modules/lote/entities/lote.entity';
+import { PromotorProduct } from 'src/modules/promotor-product/entities/promotor-product.entity';
 import { ReloadDetail } from 'src/modules/reload/entities/reload_detail.entity';
 import { User } from 'src/modules/user/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -36,4 +37,7 @@ export class Product extends GenericEntity {
 
   @OneToMany(() => ReloadDetail, (reloadDetail) => reloadDetail.reload)
   reloadDetails: ReloadDetail[];
+
+  @OneToMany(() => PromotorProduct, (promotorProduct) => promotorProduct.user)
+  promotorProducts: PromotorProduct[];
 }

@@ -4,6 +4,7 @@ import { FindAllDto } from '../findAll.dto';
 import { Lote } from '../lote/entities/lote.entity';
 import { LoteRepository } from '../lote/lote.repository';
 import { ProductsRepository } from '../products/products.repository';
+import { PromotorProductRepository } from '../promotor-product/promotor-product.repository';
 import { UserRepository } from '../user/user.repository';
 import { CreateReloadDto } from './dto/create-reload.dto';
 import { UpdateReloadDto } from './dto/update-reload.dto';
@@ -20,6 +21,7 @@ export class ReloadService {
     private reloadDetailRepository: ReloadDetailRepository,
     private productRepository: ProductsRepository,
     private loteRepository: LoteRepository,
+    private promotorProductRespository: PromotorProductRepository,
   ) {}
 
   async create(createReloadDto: CreateReloadDto, userId: number) {
@@ -181,6 +183,21 @@ export class ReloadService {
         }
 
         //TODO: crear o actualizar promotor_products
+        const promotorProduct = await this.promotorProductRespository.findOne({
+          where: { product: detail.product },
+        });
+
+        if (promotorProduct) {
+          promotorProduct.cant = promotorProduct.cant + detail.cant;
+          await this.promotorProductRespository.save(promotorProduct);
+        } else {
+          const newPromotorProduct = this.promotorProductRespository.create({
+            cant: detail.cant,
+            product: detail.product,
+            user: reload.user,
+          });
+          await this.promotorProductRespository.save(newPromotorProduct);
+        }
       }
       reload.status = ReloadStatus.APROBADO;
       return this.reloadRepository.save(reload);
