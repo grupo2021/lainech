@@ -35,6 +35,18 @@ export class ReloadController {
     return this.reloadService.findAllWithPagination(query);
   }
 
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
+  @Post('change/approve/:id')
+  changeToApprove(@Param() params: FindOneReloadDto) {
+    return this.reloadService.changeToApprove(params.id);
+  }
+
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
+  @Post('change/cancelled/:id')
+  changeToCancelled(@Param() params: FindOneReloadDto) {
+    return this.reloadService.changeToCancelled(params.id);
+  }
+
   @Get(':id')
   findOne(@Param() params: FindOneReloadDto) {
     return this.reloadService.findOne(params.id);

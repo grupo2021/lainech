@@ -1,11 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { getConnection, Like } from 'typeorm';
 import { FindAllDto } from '../findAll.dto';
+import { Lote } from '../lote/entities/lote.entity';
+import { LoteRepository } from '../lote/lote.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { UserRepository } from '../user/user.repository';
 import { CreateReloadDto } from './dto/create-reload.dto';
 import { UpdateReloadDto } from './dto/update-reload.dto';
-import { Reload } from './entities/reload.entity';
+import { Reload, ReloadStatus } from './entities/reload.entity';
 import { ReloadDetail } from './entities/reload_detail.entity';
 import { ReloadRepository } from './reload.repository';
 import { ReloadDetailRepository } from './reload_detail.repository';
@@ -17,6 +19,7 @@ export class ReloadService {
     private reloadRepository: ReloadRepository,
     private reloadDetailRepository: ReloadDetailRepository,
     private productRepository: ProductsRepository,
+    private loteRepository: LoteRepository,
   ) {}
 
   async create(createReloadDto: CreateReloadDto, userId: number) {
@@ -93,7 +96,12 @@ export class ReloadService {
 
   async findOne(id: number) {
     const reload = await this.reloadRepository.findOne(id, {
-      relations: ['user', 'reloadDetails', 'reloadDetails.product'],
+      relations: [
+        'user',
+        'reloadDetails',
+        'reloadDetails.product',
+        'reloadDetails.product.category',
+      ],
     });
 
     return {
@@ -108,7 +116,12 @@ export class ReloadService {
 
   async update(id: number, updateReloadDto: UpdateReloadDto) {
     const reload = await this.reloadRepository.findOne(id, {
-      relations: ['user'],
+      relations: [
+        'user',
+        'reloadDetails',
+        'reloadDetails.product',
+        'reloadDetails.product.category',
+      ],
     });
     reload.status = updateReloadDto.status;
     const newReload = await this.reloadRepository.save(reload);
@@ -124,5 +137,138 @@ export class ReloadService {
 
   remove(id: number) {
     return `This action is not implemented`;
+  }
+
+  async changeToApprove(reloadId: number) {
+    const reload = await this.reloadRepository.findOne(reloadId, {
+      relations: [
+        'user',
+        'reloadDetails',
+        'reloadDetails.product',
+        'reloadDetails.product.category',
+        'reloadDetails.product.lotes',
+      ],
+    });
+
+    if (reload.status !== ReloadStatus.PENDIENTE) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          messages: ['La recarga ya se encuentra en estado APROBADO o ANULADO'],
+          error: 'Bad request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    const errors = this.findErrorsOnDetails(reload.reloadDetails);
+
+    if (errors.length) {
+      this.throwErrors(errors);
+    }
+
+    try {
+      for (let i = 0; i < reload.reloadDetails.length; i++) {
+        const detail = reload.reloadDetails[i];
+        const lotesAct = this.generateLotesToUpdate(
+          detail.product.lotes,
+          detail.cant,
+        );
+        //TODO: cambiar la forma a transaccion
+        for (let j = 0; j < lotesAct.length; j++) {
+          const { createdAt, updatedAt, product, ...rest } = lotesAct[j];
+          await this.loteRepository.save(rest);
+        }
+
+        //TODO: crear o actualizar promotor_products
+      }
+      reload.status = ReloadStatus.APROBADO;
+      return this.reloadRepository.save(reload);
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          messages: ['Ocuccio un error de nuestro lado'],
+          error: 'Internal server error',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async changeToCancelled(reloadId: number) {
+    const reload = await this.reloadRepository.findOne(reloadId, {
+      relations: [
+        'user',
+        'reloadDetails',
+        'reloadDetails.product',
+        'reloadDetails.product.category',
+      ],
+    });
+    reload.status = ReloadStatus.ANULADO;
+    return this.reloadRepository.save(reload);
+  }
+
+  private findErrorsOnDetails(details: ReloadDetail[]) {
+    const res: { availableCant: number; detail: ReloadDetail }[] = [];
+    for (let i = 0; i < details.length; i++) {
+      const { product, cant: necessaryCant } = details[i];
+      const availableCant = product.lotes
+        .map((l) => ({ cant: l.cant, count_out: l.cant_out }))
+        .reduce((counter, item) => counter + (item.cant - item.count_out), 0);
+      if (necessaryCant > availableCant) {
+        res.push({ availableCant, detail: details[i] });
+      }
+    }
+
+    return res;
+  }
+
+  private throwErrors(
+    errors: { availableCant: number; detail: ReloadDetail }[],
+  ) {
+    throw new HttpException(
+      {
+        statusCode: HttpStatus.BAD_REQUEST,
+        messages: errors.map(
+          (e) =>
+            `El producto ${e.detail.product.name} tiene ${e.availableCant} unidades disponibles y es necesario  ${e.detail.cant} unidades`,
+        ),
+        error: 'Bad request',
+      },
+      HttpStatus.BAD_REQUEST,
+    );
+  }
+
+  private generateLotesToUpdate(lotes: Lote[], cantNeeded: number) {
+    const lotesSort = this.sortLotes(lotes);
+
+    const lotesToUpdate: Lote[] = [];
+
+    let count = 0;
+    let cant = cantNeeded;
+    while (cant > 0 && count < lotesSort.length) {
+      const lote = lotes[count];
+
+      if (lote.cant >= lote.cant_out + cant) {
+        lote.cant_out = lote.cant_out + cant;
+        cant = 0;
+        //colocar al arr
+        lotesToUpdate.push(lote);
+      } else if (cant > 0 && lote.cant > lote.cant_out) {
+        const rest = lote.cant - lote.cant_out;
+        lote.cant_out = lote.cant_out + rest;
+        cant = cant - rest;
+        //colorar al arr;
+        lotesToUpdate.push(lote);
+      }
+
+      count++;
+    }
+    return lotesToUpdate;
+  }
+
+  private sortLotes(lotes: Lote[]) {
+    return lotes.sort((a, b) => a.register.getTime() - b.register.getTime());
   }
 }
