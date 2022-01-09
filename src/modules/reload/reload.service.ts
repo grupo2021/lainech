@@ -40,7 +40,9 @@ export class ReloadService {
     const reloadDetails: ReloadDetail[] = [];
     for (let i = 0; i < detailsArr.length; i++) {
       const { cant, subtotal, productId } = detailsArr[i];
-      const product = await this.productRepository.findOne(productId);
+      const product = await this.productRepository.findOne(productId, {
+        relations: ['category'],
+      });
       const reloadDetail = this.reloadDetailRepository.create({
         cant,
         subtotal,
