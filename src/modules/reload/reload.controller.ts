@@ -35,6 +35,11 @@ export class ReloadController {
     return this.reloadService.findAllWithPagination(query);
   }
 
+  @Get('byuser')
+  findAllByUserWithPagination(@Query() query: FindAllDto, @Request() req) {
+    return this.reloadService.findAllByUserWithPagination(query, req.user.id);
+  }
+
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @Post('change/approve/:id')
   changeToApprove(@Param() params: FindOneReloadDto) {

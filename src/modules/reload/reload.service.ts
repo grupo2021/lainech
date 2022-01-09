@@ -98,6 +98,48 @@ export class ReloadService {
     return { data, count };
   }
 
+  async findAllByUserWithPagination(query: FindAllDto, userId: number) {
+    const page = query.page || 0;
+    const keyword = query.keyword || '';
+    const take = query.take || 10;
+    const skip = page * take;
+    const sort = query.sort || 'DESC';
+    const column = query.column;
+    let columnOrder = '';
+    switch (column) {
+      case 'date':
+        columnOrder = 'reload.date';
+        break;
+      case 'promotor':
+        columnOrder = 'user.name';
+        break;
+      case 'total':
+        columnOrder = 'reload.total';
+        break;
+      case 'status':
+        columnOrder = 'reload.status';
+        break;
+      default:
+        columnOrder = 'reload.date';
+        break;
+    }
+
+    const [data, count] = await getConnection()
+      .createQueryBuilder(Reload, 'reload')
+      .leftJoin('reload.user', 'user')
+      .where('user.name ILIKE :name', { name: `%${keyword.toUpperCase()}%` })
+      .andWhere('user.id = :id', { id: userId })
+      .addSelect('user.id')
+      .addSelect('user.name')
+      .addSelect('user.email')
+      .limit(take)
+      .offset(skip)
+      .orderBy(columnOrder, sort)
+      .getManyAndCount();
+
+    return { data, count };
+  }
+
   async findOne(id: number) {
     const reload = await this.reloadRepository.findOne(id, {
       relations: [
