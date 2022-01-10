@@ -17,7 +17,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { FindOneLoteDto } from './dto/find-one-lote.dto';
 
 @Controller('lote')
-@Roles(RoleOptions.Admin)
+@Roles(RoleOptions.Admin, RoleOptions.Almacenero)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class LoteController {
   constructor(private readonly loteService: LoteService) {}

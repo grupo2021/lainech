@@ -33,7 +33,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Roles(RoleOptions.Admin)
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -67,7 +67,7 @@ export class ProductsController {
   }
 
   @Put(':id')
-  @Roles(RoleOptions.Admin)
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -86,7 +86,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Roles(RoleOptions.Admin)
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   remove(@Param() findOneDto: FindOneProductDto) {
     return this.productsService.remove(findOneDto.id);
   }
