@@ -1,5 +1,6 @@
 import { GenericEntity } from 'src/modules/genericEntity.entity';
-import { Column, Entity } from 'typeorm';
+import { User } from 'src/modules/user/entities/user.entity';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'clients' })
 export class Client extends GenericEntity {
@@ -14,4 +15,7 @@ export class Client extends GenericEntity {
 
   @Column()
   phones: string;
+
+  @ManyToOne(() => User, (user) => user.clients, { nullable: true })
+  user: User;
 }

@@ -9,6 +9,7 @@ import {
   UseGuards,
   Put,
   Query,
+  Request,
 } from '@nestjs/common';
 import { RoleOptions, Roles } from '../auth/authorization/role.decorator';
 import { RolesGuard } from '../auth/authorization/role.guard';
@@ -20,19 +21,20 @@ import { FindOneClientDto } from './dto/find-one-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller('clients')
-@Roles(RoleOptions.Admin)
+@Roles(RoleOptions.Admin, RoleOptions.Promotor)
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
-    return this.clientsService.create(createClientDto);
+  @Roles(RoleOptions.Admin, RoleOptions.Promotor)
+  create(@Body() createClientDto: CreateClientDto, @Request() req) {
+    return this.clientsService.create(createClientDto, req.user);
   }
 
   @Get()
-  findAll(@Query() query: FindAllDto) {
-    return this.clientsService.findAll(query);
+  findAll(@Query() query: FindAllDto, @Request() req) {
+    return this.clientsService.findAll(query, req.user);
   }
 
   @Get(':id')
