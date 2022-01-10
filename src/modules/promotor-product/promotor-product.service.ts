@@ -21,11 +21,18 @@ export class PromotorProductService {
     const column = query.column;
     let columnOrder = '';
     switch (column) {
-      case 'name':
+      case 'updatedAt':
+        columnOrder = 'promotorProduct.updatedAt';
+        break;
+      case 'product':
         columnOrder = 'product.name';
+      case 'cant':
+        columnOrder = 'promotorProduct.cant';
+      case 'cant_out':
+        columnOrder = 'promotorProduct.cant_out';
         break;
       default:
-        columnOrder = 'product.name';
+        columnOrder = 'promotorProduct.updatedAt';
         break;
     }
 
@@ -33,6 +40,7 @@ export class PromotorProductService {
       .createQueryBuilder(PromotorProduct, 'promotorProduct')
       .leftJoin('promotorProduct.user', 'user')
       .leftJoin('promotorProduct.product', 'product')
+      .leftJoin('product.category', 'category')
       .where('product.name ILIKE :name', { name: `%${keyword.toUpperCase()}%` })
       .andWhere('user.id = :id', { id: userId })
       .addSelect('product.id')
@@ -42,6 +50,12 @@ export class PromotorProductService {
       .addSelect('product.price')
       .addSelect('product.code')
       .addSelect('product.profit')
+      .addSelect('category.id')
+      .addSelect('category.name')
+      .addSelect('category.code')
+      .addSelect('category.createdAt')
+      .addSelect('category.updatedAt')
+      .addSelect('category.description')
       .limit(take)
       .offset(skip)
       .orderBy(columnOrder, sort)
@@ -54,7 +68,7 @@ export class PromotorProductService {
     const user = await this.userRepository.findOne(userId);
 
     const pp = await this.promotorProductRepository.findOne(id, {
-      relations: ['product', 'user'],
+      relations: ['product', 'user', 'product.category'],
     });
 
     if (pp.user.id !== user.id) {
