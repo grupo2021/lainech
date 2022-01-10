@@ -1,26 +1,73 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePromotorProductDto } from './dto/create-promotor-product.dto';
-import { UpdatePromotorProductDto } from './dto/update-promotor-product.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { getConnection } from 'typeorm';
+import { FindAllDto } from '../findAll.dto';
+import { UserRepository } from '../user/user.repository';
+import { PromotorProduct } from './entities/promotor-product.entity';
+import { PromotorProductRepository } from './promotor-product.repository';
 
 @Injectable()
 export class PromotorProductService {
-  create(createPromotorProductDto: CreatePromotorProductDto) {
-    return 'This action adds a new promotorProduct';
+  constructor(
+    private promotorProductRepository: PromotorProductRepository,
+    private userRepository: UserRepository,
+  ) {}
+
+  async findAllByUserWithPagination(query: FindAllDto, userId: number) {
+    const page = query.page || 0;
+    const keyword = query.keyword || '';
+    const take = query.take || 10;
+    const skip = page * take;
+    const sort = query.sort || 'DESC';
+    const column = query.column;
+    let columnOrder = '';
+    switch (column) {
+      case 'name':
+        columnOrder = 'product.name';
+        break;
+      default:
+        columnOrder = 'product.name';
+        break;
+    }
+
+    const [data, count] = await getConnection()
+      .createQueryBuilder(PromotorProduct, 'promotorProduct')
+      .leftJoin('promotorProduct.user', 'user')
+      .leftJoin('promotorProduct.product', 'product')
+      .where('product.name ILIKE :name', { name: `%${keyword.toUpperCase()}%` })
+      .andWhere('user.id = :id', { id: userId })
+      .addSelect('product.id')
+      .addSelect('product.name')
+      .addSelect('product.image')
+      .addSelect('product.description')
+      .addSelect('product.price')
+      .addSelect('product.code')
+      .addSelect('product.profit')
+      .limit(take)
+      .offset(skip)
+      .orderBy(columnOrder, sort)
+      .getManyAndCount();
+
+    return { data, count };
   }
 
-  findAll() {
-    return `This action returns all promotorProduct`;
-  }
+  async findOne(id: number, userId: number) {
+    const user = await this.userRepository.findOne(userId);
 
-  findOne(id: number) {
-    return `This action returns a #${id} promotorProduct`;
-  }
+    const pp = await this.promotorProductRepository.findOne(id, {
+      relations: ['product', 'user'],
+    });
 
-  update(id: number, updatePromotorProductDto: UpdatePromotorProductDto) {
-    return `This action updates a #${id} promotorProduct`;
-  }
+    if (pp.user.id !== user.id) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          messages: ['Este recurso no te pertenece'],
+          error: 'Bad request',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} promotorProduct`;
+    return { ...pp, user: undefined };
   }
 }
