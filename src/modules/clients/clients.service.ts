@@ -118,4 +118,16 @@ export class ClientsService {
       },
     };
   }
+
+  async findAllWithoutPagination(userId: number) {
+    const user = await this.userRepository.findOne(userId);
+    const clients = await this.clientRepository.find({
+      where: { user: user },
+      relations: ['user'],
+    });
+    return clients.map((c) => ({
+      ...c,
+      user: { id: c.user.id, name: c.user.name, email: c.user.email },
+    }));
+  }
 }

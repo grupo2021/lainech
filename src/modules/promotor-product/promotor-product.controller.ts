@@ -22,11 +22,16 @@ export class PromotorProductController {
   ) {}
 
   @Get()
-  findAll(@Query() query: FindAllDto, @Request() req) {
+  findAllByUserWithPagination(@Query() query: FindAllDto, @Request() req) {
     return this.promotorProductService.findAllByUserWithPagination(
       query,
       req.user.id,
     );
+  }
+
+  @Get('sell')
+  findAllByUser(@Request() req) {
+    return this.promotorProductService.findAllByUser(req.user.id);
   }
 
   @Get(':id')

@@ -37,6 +37,11 @@ export class ClientsController {
     return this.clientsService.findAll(query, req.user);
   }
 
+  @Get('all')
+  findAllWithouPagination(@Request() req) {
+    return this.clientsService.findAllWithoutPagination(req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param() findOneDto: FindOneClientDto) {
     return this.clientsService.findOne(findOneDto.id);

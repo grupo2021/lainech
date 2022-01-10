@@ -64,6 +64,15 @@ export class PromotorProductService {
     return { data, count };
   }
 
+  async findAllByUser(userId: number) {
+    const user = await this.userRepository.findOne(userId);
+    const products = await this.promotorProductRepository.find({
+      where: { user },
+      relations: ['product', 'product.category'],
+    });
+    return products;
+  }
+
   async findOne(id: number, userId: number) {
     const user = await this.userRepository.findOne(userId);
 
