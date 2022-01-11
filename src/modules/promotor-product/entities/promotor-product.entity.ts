@@ -1,7 +1,8 @@
 import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
+import { SaleDetail } from 'src/modules/sales/entities/sale-details.entity';
 import { User } from 'src/modules/user/entities/user.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity({ name: 'promotor_products' })
 export class PromotorProduct extends GenericEntity {
@@ -16,4 +17,7 @@ export class PromotorProduct extends GenericEntity {
 
   @ManyToOne(() => User, (user) => user.promotorProducts)
   user: User;
+
+  @OneToMany(() => SaleDetail, (saleDetails) => saleDetails.sale)
+  saleDetails: SaleDetail[];
 }

@@ -228,7 +228,7 @@ export class ReloadService {
 
         //TODO: crear o actualizar promotor_products
         const promotorProduct = await this.promotorProductRespository.findOne({
-          where: { product: detail.product },
+          where: { product: detail.product, user: reload.user },
         });
 
         if (promotorProduct) {

@@ -36,7 +36,6 @@ export class ClientsService {
     const sort = query.sort || 'ASC';
 
     if (user.role === 'PROMOTOR') {
-      console.log('entro');
       const userdb = await this.userRepository.findOne(user.id);
 
       const [data, count] = await this.clientRepository.findAndCount({
