@@ -40,6 +40,12 @@ export class UserController {
     return this.userService.findAll(query);
   }
 
+  @Get('all/promotors')
+  @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
+  findAllPromotors() {
+    return this.userService.findALLPromotors();
+  }
+
   @Post('changestatus/:id')
   changeStatus(@Param() params: FindOneUserDto) {
     return this.userService.changeStatus(params.id);

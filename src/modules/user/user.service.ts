@@ -100,4 +100,10 @@ export class UserService {
     const res = await this.userRepository.save(user);
     return { ...res, role: res.role.code };
   }
+
+  async findALLPromotors() {
+    const role = await this.roleService.findByCode('PROMOTOR');
+    const users = await this.userRepository.find({ where: { role } });
+    return users.map((u) => ({ id: u.id, name: u.name, email: u.email }));
+  }
 }
