@@ -14,6 +14,9 @@ export class ReloadDetail extends GenericEntity {
   @Column({ default: 0 })
   cant_sold: number;
 
+  @Column({ default: 1 })
+  precio_unitario: number;
+
   @ManyToOne(() => Reload, (reloads) => reloads.reloadDetails)
   reload: Reload;
 

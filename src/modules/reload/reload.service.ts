@@ -47,6 +47,7 @@ export class ReloadService {
         cant,
         subtotal,
         product,
+        precio_unitario: product.price,
       });
       reloadDetails.push(reloadDetail);
     }
