@@ -16,6 +16,7 @@ import { LoteModule } from './modules/lote/lote.module';
 import { ReloadModule } from './modules/reload/reload.module';
 import { PromotorProductModule } from './modules/promotor-product/promotor-product.module';
 import { SalesModule } from './modules/sales/sales.module';
+import { ReportModule } from './modules/report/report.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { SalesModule } from './modules/sales/sales.module';
     ReloadModule,
     PromotorProductModule,
     SalesModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],
