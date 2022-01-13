@@ -12,4 +12,7 @@ export class UpdateClientDto {
 
   @IsNotEmpty()
   phones: string;
+
+  @IsNotEmpty()
+  identification_number: string;
 }

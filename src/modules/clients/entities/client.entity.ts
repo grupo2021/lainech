@@ -17,6 +17,15 @@ export class Client extends GenericEntity {
   @Column()
   phones: string;
 
+  @Column({ default: '111AAA' })
+  identification_number: string;
+
+  @Column({ default: 'www.noimage.com' })
+  image: string;
+
+  @Column({ default: '-66.15689613829687,-17.393748196299114,' })
+  coords: string;
+
   @ManyToOne(() => User, (user) => user.clients, { nullable: true })
   user: User;
 

@@ -12,4 +12,7 @@ export class CreateClientDto {
 
   @IsNotEmpty()
   phones: string;
+
+  @IsNotEmpty()
+  identification_number: string;
 }
