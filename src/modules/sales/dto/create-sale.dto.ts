@@ -1,6 +1,4 @@
 import { IsDateString, IsNotEmpty } from 'class-validator';
-import { Client } from 'src/modules/clients/entities/client.entity';
-import { ExistsOnDatabase } from 'src/validations/exists-on-database';
 
 export class CreateSaleDto {
   @IsNotEmpty()
@@ -10,8 +8,6 @@ export class CreateSaleDto {
   @IsNotEmpty()
   total: number;
 
-  @IsNotEmpty()
-  @ExistsOnDatabase(Client)
   clientId: number;
 
   @IsNotEmpty()

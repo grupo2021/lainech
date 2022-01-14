@@ -26,8 +26,8 @@ export class SalesController {
 
   @Post()
   @Roles(RoleOptions.Promotor, RoleOptions.Admin)
-  create(@Body() createSaleDto: CreateSaleDto) {
-    return this.salesService.create(createSaleDto);
+  create(@Body() createSaleDto: CreateSaleDto, @Request() req) {
+    return this.salesService.create(createSaleDto, req.user.id);
   }
 
   @Get()

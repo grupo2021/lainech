@@ -22,10 +22,8 @@ export class SalesService {
     private userRepository: UserRepository,
   ) {}
 
-  async create(createSaleDto: CreateSaleDto) {
+  async create(createSaleDto: CreateSaleDto, userId: number) {
     const { clientId, saleDetails, date, total } = createSaleDto;
-
-    const client = await this.clientRepository.findOne(clientId);
 
     const sale = this.saleRepository.create({ date, total });
 
@@ -53,7 +51,11 @@ export class SalesService {
       saleDetailsEntity.push(detail);
     }
 
-    sale.client = client;
+    if (clientId) {
+      sale.client = await this.clientRepository.findOne(clientId);
+    }
+
+    sale.user = await this.userRepository.findOne(userId);
     sale.saleDetails = saleDetailsEntity;
     const saledb = await this.saleRepository.save(sale);
 
@@ -75,12 +77,6 @@ export class SalesService {
       case 'promotor':
         columnOrder = 'user.name';
         break;
-      case 'name':
-        columnOrder = 'client.name';
-        break;
-      case 'surname':
-        columnOrder = 'client.surname';
-        break;
       case 'total':
         columnOrder = 'sale.total';
         break;
@@ -96,7 +92,7 @@ export class SalesService {
       const [data, count] = await getConnection()
         .createQueryBuilder(Sale, 'sale')
         .leftJoin('sale.client', 'client')
-        .leftJoin('client.user', 'user')
+        .leftJoin('sale.user', 'user')
         .where('user.name ILIKE :name', {
           name: `%${keyword.toUpperCase()}%`,
         })
@@ -114,22 +110,12 @@ export class SalesService {
         .orderBy(columnOrder, sort)
         .getManyAndCount();
 
-      const res = data.map((d) => ({
-        ...d,
-        user: {
-          id: d.client.user.id,
-          name: d.client.user.name,
-          email: d.client.user.email,
-        },
-        client: { ...d.client, user: undefined },
-      }));
-
-      return { data: res, count };
+      return { data, count };
     } else {
       const [data, count] = await getConnection()
         .createQueryBuilder(Sale, 'sale')
         .leftJoin('sale.client', 'client')
-        .leftJoin('client.user', 'user')
+        .leftJoin('sale.user', 'user')
         .where('user.name ILIKE :name', {
           name: `%${keyword.toUpperCase()}%`,
         })
@@ -146,17 +132,7 @@ export class SalesService {
         .orderBy(columnOrder, sort)
         .getManyAndCount();
 
-      const res = data.map((d) => ({
-        ...d,
-        user: {
-          id: d.client.user.id,
-          name: d.client.user.name,
-          email: d.client.user.email,
-        },
-        client: { ...d.client, user: undefined },
-      }));
-
-      return { data: res, count };
+      return { data, count };
     }
   }
 
@@ -167,11 +143,11 @@ export class SalesService {
         'saleDetails.promotorProduct',
         'saleDetails.promotorProduct.product',
         'client',
-        'client.user',
+        'user',
       ],
     });
 
-    if (user.role === 'PROMOTOR' && user.id !== sale.client.user.id) {
+    if (user.role === 'PROMOTOR' && user.id !== sale.user.id) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -185,11 +161,10 @@ export class SalesService {
     return {
       ...sale,
       user: {
-        id: sale.client.user.id,
-        name: sale.client.user.name,
-        email: sale.client.user.email,
+        id: sale.user.id,
+        name: sale.user.name,
+        email: sale.user.email,
       },
-      client: { ...sale.client, user: undefined },
       saleDetails: sale.saleDetails.map((d) => ({
         ...d,
         product: {
@@ -223,7 +198,7 @@ export class SalesService {
         'saleDetails.promotorProduct',
         'saleDetails.promotorProduct.product',
         'client',
-        'client.user',
+        'user',
       ],
     });
 
@@ -238,7 +213,7 @@ export class SalesService {
       );
     }
 
-    if (user.role === 'PROMOTOR' && user.id !== sale.client.user.id) {
+    if (user.role === 'PROMOTOR' && user.id !== sale.user.id) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -269,11 +244,10 @@ export class SalesService {
     return {
       ...saledb,
       user: {
-        id: saledb.client.user.id,
-        name: saledb.client.user.name,
-        email: saledb.client.user.email,
+        id: saledb.user.id,
+        name: saledb.user.name,
+        email: saledb.user.email,
       },
-      client: { ...saledb.client, user: undefined },
       saleDetails: saledb.saleDetails.map((d) => ({
         ...d,
         product: {
@@ -299,11 +273,11 @@ export class SalesService {
         'saleDetails.promotorProduct',
         'saleDetails.promotorProduct.product',
         'client',
-        'client.user',
+        'user',
       ],
     });
 
-    if (user.role === 'PROMOTOR' && user.id !== sale.client.user.id) {
+    if (user.role === 'PROMOTOR' && user.id !== sale.user.id) {
       throw new HttpException(
         {
           statusCode: HttpStatus.BAD_REQUEST,
@@ -319,11 +293,10 @@ export class SalesService {
     return {
       ...saledb,
       user: {
-        id: saledb.client.user.id,
-        name: saledb.client.user.name,
-        email: saledb.client.user.email,
+        id: saledb.user.id,
+        name: saledb.user.name,
+        email: saledb.user.email,
       },
-      client: { ...saledb.client, user: undefined },
       saleDetails: saledb.saleDetails.map((d) => ({
         ...d,
         product: {
