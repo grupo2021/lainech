@@ -37,7 +37,7 @@ export class ReportService {
     const [data, count] = await getConnection()
       .createQueryBuilder(Sale, 'sale')
       .leftJoinAndSelect('sale.client', 'client')
-      .leftJoinAndSelect('client.user', 'user')
+      .leftJoinAndSelect('sale.user', 'user')
       .leftJoinAndSelect('sale.saleDetails', 'saleDetails')
       .leftJoinAndSelect('saleDetails.promotorProduct', 'promotorProduct')
       .leftJoinAndSelect('promotorProduct.product', 'product')
@@ -48,6 +48,7 @@ export class ReportService {
 
     const report = data.map((d) => ({
       ...d,
+      user: undefined,
       client: undefined,
       details: d.saleDetails.map((d) => ({
         ...d,
