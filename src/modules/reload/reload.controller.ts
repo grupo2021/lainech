@@ -18,6 +18,7 @@ import { RolesGuard } from '../auth/authorization/role.guard';
 import { RoleOptions, Roles } from '../auth/authorization/role.decorator';
 import { FindOneReloadDto } from './dto/find-one-reload.dto';
 import { FindAllDto } from '../findAll.dto';
+import { CancelledReloadDto } from './dto/cancelled-reload.dto';
 
 @Controller('reload')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -48,8 +49,11 @@ export class ReloadController {
 
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @Post('change/cancelled/:id')
-  changeToCancelled(@Param() params: FindOneReloadDto) {
-    return this.reloadService.changeToCancelled(params.id);
+  changeToCancelled(
+    @Param() params: FindOneReloadDto,
+    @Body() cancelledDto: CancelledReloadDto,
+  ) {
+    return this.reloadService.changeToCancelled(params.id, cancelledDto);
   }
 
   @Get(':id')

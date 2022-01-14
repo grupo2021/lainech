@@ -17,6 +17,9 @@ export class Reload extends GenericEntity {
   @Column()
   total: number;
 
+  @Column({ nullable: true })
+  return_description: string;
+
   @Column({ default: ReloadStatus.PENDIENTE })
   status: ReloadStatus;
 

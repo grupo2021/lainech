@@ -6,6 +6,7 @@ import { LoteRepository } from '../lote/lote.repository';
 import { ProductsRepository } from '../products/products.repository';
 import { PromotorProductRepository } from '../promotor-product/promotor-product.repository';
 import { UserRepository } from '../user/user.repository';
+import { CancelledReloadDto } from './dto/cancelled-reload.dto';
 import { CreateReloadDto } from './dto/create-reload.dto';
 import { UpdateReloadDto } from './dto/update-reload.dto';
 import { Reload, ReloadStatus } from './entities/reload.entity';
@@ -258,7 +259,7 @@ export class ReloadService {
     }
   }
 
-  async changeToCancelled(reloadId: number) {
+  async changeToCancelled(reloadId: number, canlelledDto: CancelledReloadDto) {
     const reload = await this.reloadRepository.findOne(reloadId, {
       relations: [
         'user',
@@ -268,6 +269,7 @@ export class ReloadService {
       ],
     });
     reload.status = ReloadStatus.ANULADO;
+    reload.return_description = canlelledDto.return_description;
     return this.reloadRepository.save(reload);
   }
 

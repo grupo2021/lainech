@@ -40,10 +40,10 @@ export const config = () => ({
     synchronize: false,
 
     // DESCOMENTAR PARA MANDAR A PRODUCCION
-    ssl: {
-      rejectUnauthorized: false,
-    },
-    migrationsRun: true,
+    // ssl: {
+    //   rejectUnauthorized: false,
+    // },
+    // migrationsRun: true,
     // DESCOMENTAR PARA MANDAR A PRODUCCION
   },
 });
