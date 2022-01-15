@@ -39,9 +39,12 @@ export class ClientsService {
       const userdb = await this.userRepository.findOne(user.id);
 
       const [data, count] = await this.clientRepository.findAndCount({
-        where: { user: userdb, name: Like('%' + keyword.toUpperCase() + '%') },
+        where: {
+          user: userdb,
+          trade_name: Like('%' + keyword.toUpperCase() + '%'),
+        },
         relations: ['user'],
-        order: { name: sort },
+        order: { trade_name: sort },
         take,
         skip,
       });
@@ -55,9 +58,9 @@ export class ClientsService {
     }
 
     const [data, count] = await this.clientRepository.findAndCount({
-      where: { name: Like('%' + keyword.toUpperCase() + '%') },
+      where: { trade_name: Like('%' + keyword.toUpperCase() + '%') },
       relations: ['user'],
-      order: { name: sort },
+      order: { trade_name: sort },
       take,
       skip,
     });

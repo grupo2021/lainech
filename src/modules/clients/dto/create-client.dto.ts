@@ -1,4 +1,5 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { ClientTypes } from '../entities/client.entity';
 
 export class CreateClientDto {
   @IsNotEmpty()
@@ -15,4 +16,17 @@ export class CreateClientDto {
 
   @IsNotEmpty()
   identification_number: string;
+
+  @IsNotEmpty()
+  trade_name: string;
+
+  @IsNotEmpty()
+  @IsEnum(ClientTypes)
+  type: ClientTypes;
+
+  @IsNotEmpty()
+  person_charge: string;
+
+  @IsNotEmpty()
+  phone_person_charge: string;
 }
