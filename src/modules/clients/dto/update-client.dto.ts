@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
-import { ClientTypes } from '../entities/client.entity';
+import { ClientSalePoint, ClientTypes } from '../entities/client.entity';
 
 export class UpdateClientDto {
   @IsNotEmpty()
@@ -25,8 +25,10 @@ export class UpdateClientDto {
   type: ClientTypes;
 
   @IsNotEmpty()
+  @IsEnum(ClientSalePoint)
+  sale_point: ClientSalePoint;
+
   person_charge: string;
 
-  @IsNotEmpty()
   phone_person_charge: string;
 }

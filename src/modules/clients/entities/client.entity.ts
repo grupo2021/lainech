@@ -4,9 +4,14 @@ import { User } from 'src/modules/user/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 export enum ClientTypes {
-  SUCURSAL = 'SUCURSAL',
-  CENTRAL = 'CENTRAL',
+  CADENA = 'CADENA',
+  FARMACIA = 'FARMACIA',
   TIENDA = 'TIENDA',
+}
+
+export enum ClientSalePoint {
+  MATRIZ = 'MATRIZ',
+  SUCURSAL = 'SUCURSAL',
 }
 
 @Entity({ name: 'clients' })
@@ -37,6 +42,9 @@ export class Client extends GenericEntity {
 
   @Column({ default: ClientTypes.TIENDA })
   type: ClientTypes;
+
+  @Column({ default: ClientSalePoint.MATRIZ })
+  sale_point: ClientSalePoint;
 
   @Column({ default: 'SIN RESPONSABLE' })
   person_charge: string;
