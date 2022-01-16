@@ -8,6 +8,9 @@ export class UpdateLoteDto {
   cant: number;
 
   @IsNotEmpty()
+  cant_out: number;
+
+  @IsNotEmpty()
   price: number;
 
   @IsNotEmpty()
