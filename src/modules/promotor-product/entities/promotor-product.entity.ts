@@ -1,8 +1,9 @@
 import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { Product } from 'src/modules/products/entities/product.entity';
+import { Return } from 'src/modules/returns/entities/return.entity';
 import { SaleDetail } from 'src/modules/sales/entities/sale-details.entity';
 import { User } from 'src/modules/user/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, OneToOne } from 'typeorm';
 
 @Entity({ name: 'promotor_products' })
 export class PromotorProduct extends GenericEntity {
@@ -12,6 +13,9 @@ export class PromotorProduct extends GenericEntity {
   @Column({ default: 0 })
   cant_out: number;
 
+  @Column({ default: 0 })
+  cant_returned: number;
+
   @ManyToOne(() => Product, (product) => product.promotorProducts)
   product: Product;
 
@@ -20,4 +24,7 @@ export class PromotorProduct extends GenericEntity {
 
   @OneToMany(() => SaleDetail, (saleDetails) => saleDetails.sale)
   saleDetails: SaleDetail[];
+
+  @OneToOne(() => Return, (returns) => returns.promotorProduct) // specify inverse side as a second parameter
+  returns: Return;
 }

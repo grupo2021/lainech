@@ -17,6 +17,7 @@ import { ReloadModule } from './modules/reload/reload.module';
 import { PromotorProductModule } from './modules/promotor-product/promotor-product.module';
 import { SalesModule } from './modules/sales/sales.module';
 import { ReportModule } from './modules/report/report.module';
+import { ReturnsModule } from './modules/returns/returns.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ReportModule } from './modules/report/report.module';
     PromotorProductModule,
     SalesModule,
     ReportModule,
+    ReturnsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
