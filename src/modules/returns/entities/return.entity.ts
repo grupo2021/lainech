@@ -1,6 +1,7 @@
 import { GenericEntity } from 'src/modules/genericEntity.entity';
 import { PromotorProduct } from 'src/modules/promotor-product/entities/promotor-product.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { User } from 'src/modules/user/entities/user.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 
 export enum ReturnStatus {
   APROVADO = 'APROBADO',
@@ -32,4 +33,7 @@ export class Return extends GenericEntity {
   )
   @JoinColumn()
   promotorProduct: PromotorProduct;
+
+  @ManyToOne(() => User, (user) => user.almacenero_returns)
+  almacenero: User;
 }

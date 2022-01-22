@@ -43,8 +43,8 @@ export class ReloadController {
 
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @Post('change/approve/:id')
-  changeToApprove(@Param() params: FindOneReloadDto) {
-    return this.reloadService.changeToApprove(params.id);
+  changeToApprove(@Param() params: FindOneReloadDto, @Request() req) {
+    return this.reloadService.changeToApprove(params.id, req.user.id);
   }
 
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
@@ -52,8 +52,13 @@ export class ReloadController {
   changeToCancelled(
     @Param() params: FindOneReloadDto,
     @Body() cancelledDto: CancelledReloadDto,
+    @Request() req,
   ) {
-    return this.reloadService.changeToCancelled(params.id, cancelledDto);
+    return this.reloadService.changeToCancelled(
+      params.id,
+      cancelledDto,
+      req.user.id,
+    );
   }
 
   @Get(':id')
@@ -66,8 +71,9 @@ export class ReloadController {
   update(
     @Param() params: FindOneReloadDto,
     @Body() updateReloadDto: UpdateReloadDto,
+    @Request() req,
   ) {
-    return this.reloadService.update(params.id, updateReloadDto);
+    return this.reloadService.update(params.id, updateReloadDto, req.user.id);
   }
 
   @Delete(':id')

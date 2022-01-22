@@ -2,6 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { getConnection, Like } from 'typeorm';
 import { FindAllDto } from '../findAll.dto';
 import { PromotorProductRepository } from '../promotor-product/promotor-product.repository';
+import { User } from '../user/entities/user.entity';
+import { UserRepository } from '../user/user.repository';
 import { CreateReturnDto } from './dto/create-return.dto';
 import { UpdateReturnDto } from './dto/update-return.dto';
 import { Return, ReturnStatus } from './entities/return.entity';
@@ -12,6 +14,7 @@ export class ReturnsService {
   constructor(
     private returnsRepository: ReturnsRepository,
     private promotorProductRepository: PromotorProductRepository,
+    private userRepository: UserRepository,
   ) {}
   async create(
     createReturnDto: CreateReturnDto,
@@ -138,7 +141,7 @@ export class ReturnsService {
     };
   }
 
-  async update(id: number, updateReturnDto: UpdateReturnDto) {
+  async update(id: number, updateReturnDto: UpdateReturnDto, userId: number) {
     const { status, cancelled_description } = updateReturnDto;
 
     const returns = await this.returnsRepository.findOne(id, {
@@ -160,16 +163,19 @@ export class ReturnsService {
       );
     }
 
+    const user = await this.userRepository.findOne(userId);
+
     if (status === 'APROBADO') {
-      return this.changeToApprove(returns, status);
+      return this.changeToApprove(returns, status, user);
     }
-    return this.changeToCancelled(returns, status, cancelled_description);
+    return this.changeToCancelled(returns, status, cancelled_description, user);
   }
 
   private async changeToCancelled(
     returns: Return,
     status: ReturnStatus,
     description: string,
+    user: User,
   ) {
     if (!description) {
       throw new HttpException(
@@ -184,6 +190,7 @@ export class ReturnsService {
     returns.promotorProduct.cant_returned = 0;
     returns.status = status;
     returns.cancelled_description = description;
+    returns.almacenero = user;
     const returnsdb = await this.returnsRepository.save(returns);
     return {
       ...returnsdb,
@@ -198,8 +205,13 @@ export class ReturnsService {
     };
   }
 
-  private async changeToApprove(returns: Return, status: ReturnStatus) {
+  private async changeToApprove(
+    returns: Return,
+    status: ReturnStatus,
+    user: User,
+  ) {
     returns.status = status;
+    returns.almacenero = user;
     const returnsdb = await this.returnsRepository.save(returns);
     return {
       ...returnsdb,

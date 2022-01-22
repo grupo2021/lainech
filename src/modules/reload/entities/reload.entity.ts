@@ -30,4 +30,7 @@ export class Reload extends GenericEntity {
 
   @ManyToOne(() => User, (user) => user.reloads)
   user: User;
+
+  @ManyToOne(() => User, (user) => user.almacenero_reloads)
+  almacenero: User;
 }

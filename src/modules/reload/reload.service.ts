@@ -162,7 +162,7 @@ export class ReloadService {
     };
   }
 
-  async update(id: number, updateReloadDto: UpdateReloadDto) {
+  async update(id: number, updateReloadDto: UpdateReloadDto, userId: number) {
     const reload = await this.reloadRepository.findOne(id, {
       relations: [
         'user',
@@ -172,6 +172,7 @@ export class ReloadService {
       ],
     });
     reload.status = updateReloadDto.status;
+    reload.almacenero = await this.userRepository.findOne(userId);
     const newReload = await this.reloadRepository.save(reload);
     return {
       ...newReload,
@@ -187,7 +188,7 @@ export class ReloadService {
     return `This action is not implemented`;
   }
 
-  async changeToApprove(reloadId: number) {
+  async changeToApprove(reloadId: number, userId: number) {
     const reload = await this.reloadRepository.findOne(reloadId, {
       relations: [
         'user',
@@ -246,6 +247,7 @@ export class ReloadService {
         }
       }
       reload.status = ReloadStatus.APROBADO;
+      reload.almacenero = await this.userRepository.findOne(userId);
       return this.reloadRepository.save(reload);
     } catch (error) {
       throw new HttpException(
@@ -259,7 +261,11 @@ export class ReloadService {
     }
   }
 
-  async changeToCancelled(reloadId: number, canlelledDto: CancelledReloadDto) {
+  async changeToCancelled(
+    reloadId: number,
+    canlelledDto: CancelledReloadDto,
+    userId: number,
+  ) {
     const reload = await this.reloadRepository.findOne(reloadId, {
       relations: [
         'user',
@@ -270,6 +276,7 @@ export class ReloadService {
     });
     reload.status = ReloadStatus.ANULADO;
     reload.return_description = canlelledDto.return_description;
+    reload.almacenero = await this.userRepository.findOne(userId);
     return this.reloadRepository.save(reload);
   }
 

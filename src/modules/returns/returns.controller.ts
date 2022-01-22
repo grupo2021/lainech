@@ -44,7 +44,8 @@ export class ReturnsController {
   update(
     @Param() params: FindOneReturnDto,
     @Body() updateReturnDto: UpdateReturnDto,
+    @Request() req,
   ) {
-    return this.returnsService.update(params.id, updateReturnDto);
+    return this.returnsService.update(params.id, updateReturnDto, req.user.id);
   }
 }
