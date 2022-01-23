@@ -38,10 +38,10 @@ export const config = () => ({
       migrationsDir: 'src/database/migrations',
     },
     synchronize: false,
-
-    // DESCOMENTAR PARA MANDAR A PRODUCCION
-    ssl: { rejectUnauthorized: false },
-    migrationsRun: true,
-    // DESCOMENTAR PARA MANDAR A PRODUCCION
+    ssl:
+      process.env.NODE_ENV === 'production'
+        ? { rejectUnauthorized: false }
+        : false,
+    migrationsRun: process.env.NODE_ENV === 'production',
   },
 });
