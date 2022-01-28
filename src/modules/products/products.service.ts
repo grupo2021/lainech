@@ -55,7 +55,7 @@ export class ProductsService {
     const sort = query.sort || 'ASC';
 
     const [data, count] = await this.productRepository.findAndCount({
-      relations: ['category'],
+      relations: ['category', 'lotes'],
       where: { name: Like('%' + keyword.toUpperCase() + '%') },
       order: { name: sort },
       take,
