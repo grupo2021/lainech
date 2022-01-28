@@ -5,6 +5,7 @@ export enum ReportType {
   VENTAS = 'VENTAS',
   RETURNS = 'RETURNS',
   BEST = 'BEST',
+  PRODUCT = 'BEST-PRODUCT',
 }
 
 export enum ReportStatus {

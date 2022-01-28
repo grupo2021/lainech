@@ -32,6 +32,8 @@ export class ReportService {
         return this.generateBestSale(userId, initDate, endDate);
       case ReportType.RETURNS:
         return this.generateReturnsReport(userId, initDate, endDate, status);
+      case ReportType.PRODUCT:
+        return this.generateBestProduct(userId, initDate, endDate, status);
     }
   }
 
@@ -231,5 +233,61 @@ export class ReportService {
       count,
       type: 'RETURNS',
     };
+  }
+
+  private async generateBestProduct(
+    userId: number,
+    initDate: Date,
+    endDate: Date,
+    status: ReportStatus,
+  ) {
+    const [data, count] = await this.saleRepository.findAndCount({
+      where:
+        status == 'ALL'
+          ? {
+              user: userId == 0 ? {} : { id: userId },
+              date: Between(initDate, endDate),
+            }
+          : {
+              user: userId == 0 ? {} : { id: userId },
+              date: Between(initDate, endDate),
+              status,
+            },
+      relations: [
+        'saleDetails',
+        'saleDetails.promotorProduct',
+        'saleDetails.promotorProduct.product',
+      ],
+    });
+
+    const dataRes = data
+      .map((d) => d.saleDetails)
+      .flat()
+      .map((d) => ({
+        ...d,
+        product: d.promotorProduct.product,
+        promotorProduct: undefined,
+      }))
+      .reduce((acum, i) => {
+        const item = acum.find((a) => a?.product.id === i.product.id);
+        if (item) {
+          item.cant_acum += i.cant;
+          item.total_acum += i.subtotal;
+        } else {
+          let aux: any = { ...i };
+          aux.cant_acum = i.cant;
+          aux.total_acum = i.subtotal;
+          acum.push(aux);
+        }
+        return acum;
+      }, [])
+      .map((r) => ({
+        product: r.product.name,
+        cant_acum: r.cant_acum,
+        total_acum: r.total_acum,
+      }))
+      .sort((a, b) => b.total_acum - a.total_acum);
+
+    return { data: dataRes, count: dataRes.length, type: 'BEST-PRODUCT' };
   }
 }
