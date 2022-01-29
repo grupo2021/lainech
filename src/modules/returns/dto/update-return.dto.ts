@@ -6,5 +6,6 @@ export class UpdateReturnDto {
   @IsEnum(ReturnStatus)
   status: ReturnStatus;
 
-  cancelled_description: string;
+  @IsNotEmpty()
+  description: string;
 }

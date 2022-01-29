@@ -25,6 +25,6 @@ export class PromotorProduct extends GenericEntity {
   @OneToMany(() => SaleDetail, (saleDetails) => saleDetails.sale)
   saleDetails: SaleDetail[];
 
-  @OneToOne(() => Return, (returns) => returns.promotorProduct) // specify inverse side as a second parameter
+  @OneToMany(() => Return, (returns) => returns.promotorProduct)
   returns: Return;
 }

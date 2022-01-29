@@ -26,12 +26,14 @@ export class Return extends GenericEntity {
   @Column({ nullable: true })
   cancelled_description: string;
 
-  @OneToOne(
+  @Column({ nullable: true })
+  approve_description: string;
+
+  @ManyToOne(
     () => PromotorProduct,
     (promotorProduct) => promotorProduct.returns,
     { cascade: true },
   )
-  @JoinColumn()
   promotorProduct: PromotorProduct;
 
   @ManyToOne(() => User, (user) => user.almacenero_returns)

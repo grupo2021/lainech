@@ -142,7 +142,7 @@ export class ReturnsService {
   }
 
   async update(id: number, updateReturnDto: UpdateReturnDto, userId: number) {
-    const { status, cancelled_description } = updateReturnDto;
+    const { status, description } = updateReturnDto;
 
     const returns = await this.returnsRepository.findOne(id, {
       relations: [
@@ -166,9 +166,9 @@ export class ReturnsService {
     const user = await this.userRepository.findOne(userId);
 
     if (status === 'APROBADO') {
-      return this.changeToApprove(returns, status, user);
+      return this.changeToApprove(returns, status, description, user);
     }
-    return this.changeToCancelled(returns, status, cancelled_description, user);
+    return this.changeToCancelled(returns, status, description, user);
   }
 
   private async changeToCancelled(
@@ -177,16 +177,6 @@ export class ReturnsService {
     description: string,
     user: User,
   ) {
-    if (!description) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          messages: [`El campo cancelled_description es necesario`],
-          error: 'Bad request',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     returns.promotorProduct.cant_returned = 0;
     returns.status = status;
     returns.cancelled_description = description;
@@ -208,10 +198,12 @@ export class ReturnsService {
   private async changeToApprove(
     returns: Return,
     status: ReturnStatus,
+    description: string,
     user: User,
   ) {
     returns.status = status;
     returns.almacenero = user;
+    returns.approve_description = description;
     const returnsdb = await this.returnsRepository.save(returns);
     return {
       ...returnsdb,
