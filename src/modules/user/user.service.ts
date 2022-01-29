@@ -5,6 +5,7 @@ import { FindAllDto } from '../findAll.dto';
 import { ProfileRepository } from '../profile/profile.repository';
 import { RoleCode, RoleService } from '../role/role.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { RenewUserDto } from './dto/renew-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserStatus } from './entities/user.entity';
 import { UserRepository } from './user.repository';
@@ -105,5 +106,15 @@ export class UserService {
     const role = await this.roleService.findByCode('PROMOTOR');
     const users = await this.userRepository.find({ where: { role } });
     return users.map((u) => ({ id: u.id, name: u.name, email: u.email }));
+  }
+
+  async changePassword(renew: RenewUserDto) {
+    const { password, userId } = renew;
+    const user = await this.userRepository.findOne(userId, {
+      relations: ['role', 'profile'],
+    });
+    user.password = PasswordEncrypter.encrypt(password);
+    const { password: pass, ...rest } = await this.userRepository.save(user);
+    return { ...rest, role: rest.role.code };
   }
 }

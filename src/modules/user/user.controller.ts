@@ -20,6 +20,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RoleOptions, Roles } from '../auth/authorization/role.decorator';
 import { RolesGuard } from '../auth/authorization/role.guard';
 import { FindAllDto } from '../findAll.dto';
+import { RenewUserDto } from './dto/renew-user.dto';
 
 @Controller('users')
 @UseGuards(JwtAuthGuard)
@@ -44,6 +45,12 @@ export class UserController {
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   findAllPromotors() {
     return this.userService.findALLPromotors();
+  }
+
+  @Put('change')
+  @Roles(RoleOptions.Admin)
+  changePassword(@Body() renewDto: RenewUserDto) {
+    return this.userService.changePassword(renewDto);
   }
 
   @Post('changestatus/:id')
