@@ -10,7 +10,14 @@ import {
   Put,
   Query,
   Request,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { join } from 'path';
+import { editFileName, imageFileFilter } from 'src/utils/file-upload.utils';
+import { ImageInterface } from 'src/utils/image.interface';
 import { RoleOptions, Roles } from '../auth/authorization/role.decorator';
 import { RolesGuard } from '../auth/authorization/role.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -28,8 +35,21 @@ export class ClientsController {
 
   @Post()
   @Roles(RoleOptions.Admin, RoleOptions.Promotor)
-  create(@Body() createClientDto: CreateClientDto, @Request() req) {
-    return this.clientsService.create(createClientDto, req.user);
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: join(__dirname, '../../public/img/uploads'),
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
+  create(
+    @Body() createClientDto: CreateClientDto,
+    @Request() req,
+    @UploadedFile() file: ImageInterface,
+  ) {
+    return this.clientsService.create(createClientDto, req.user, file);
   }
 
   @Get()
@@ -48,11 +68,21 @@ export class ClientsController {
   }
 
   @Put(':id')
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: join(__dirname, '../../public/img/uploads'),
+        filename: editFileName,
+      }),
+      fileFilter: imageFileFilter,
+    }),
+  )
   update(
     @Param() findOneDto: FindOneClientDto,
     @Body() updateClientDto: UpdateClientDto,
+    @UploadedFile() file: ImageInterface,
   ) {
-    return this.clientsService.update(findOneDto.id, updateClientDto);
+    return this.clientsService.update(findOneDto.id, updateClientDto, file);
   }
 
   @Delete(':id')

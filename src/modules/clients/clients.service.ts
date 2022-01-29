@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { ImageInterface } from 'src/utils/image.interface';
 import { Like } from 'typeorm';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { FindAllDto } from '../findAll.dto';
 import { UserRepository } from '../user/user.repository';
 import { ClientRepository } from './clientsRepository';
@@ -11,12 +13,21 @@ export class ClientsService {
   constructor(
     private clientRepository: ClientRepository,
     private userRepository: UserRepository,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
-  async create(createClientDto: CreateClientDto, user: any) {
+  async create(
+    createClientDto: CreateClientDto,
+    user: any,
+    file: ImageInterface,
+  ) {
     const userdb = await this.userRepository.findOne(user.id);
     const client = this.clientRepository.create(createClientDto);
     client.user = userdb;
+
+    if (file) {
+      client.image = await this.cloudinaryService.uploadImage(file);
+    }
     const clientdb = await this.clientRepository.save(client);
     return {
       ...clientdb,
@@ -88,11 +99,26 @@ export class ClientsService {
     };
   }
 
-  async update(id: number, updateClientDto: UpdateClientDto) {
+  async update(
+    id: number,
+    updateClientDto: UpdateClientDto,
+    file: ImageInterface,
+  ) {
     const client = await this.clientRepository.findOne(id, {
       relations: ['user'],
     });
     this.clientRepository.merge(client, updateClientDto);
+
+    if (file) {
+      if (client.image === 'www.noimage.com') {
+        client.image = await this.cloudinaryService.uploadImage(file);
+      } else {
+        client.image = await this.cloudinaryService.replaceImage(
+          client.image,
+          file,
+        );
+      }
+    }
 
     const clientdb = await this.clientRepository.save(client);
 
