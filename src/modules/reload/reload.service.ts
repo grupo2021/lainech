@@ -280,6 +280,16 @@ export class ReloadService {
     return this.reloadRepository.save(reload);
   }
 
+  public async getPending(userId: number) {
+    const [reloads, count] = await this.reloadRepository.findAndCount({
+      where:
+        userId === 0
+          ? { status: ReloadStatus.PENDIENTE }
+          : { user: { id: userId }, status: ReloadStatus.PENDIENTE },
+    });
+    return count;
+  }
+
   private findErrorsOnDetails(details: ReloadDetail[]) {
     const res: { availableCant: number; detail: ReloadDetail }[] = [];
     for (let i = 0; i < details.length; i++) {

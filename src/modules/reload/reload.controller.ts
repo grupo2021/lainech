@@ -41,6 +41,11 @@ export class ReloadController {
     return this.reloadService.findAllByUserWithPagination(query, req.user.id);
   }
 
+  @Get('pending-count/:id')
+  getPending(@Param('id') id) {
+    return this.reloadService.getPending(+id);
+  }
+
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
   @Post('change/approve/:id')
   changeToApprove(@Param() params: FindOneReloadDto, @Request() req) {

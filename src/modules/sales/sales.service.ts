@@ -315,6 +315,16 @@ export class SalesService {
     };
   }
 
+  public async getPendings(user: { role: string; id: number }) {
+    const [sales, count] = await this.saleRepository.findAndCount({
+      where:
+        user.role !== 'PROMOTOR'
+          ? { status: SaleStatus.PENDIENTE }
+          : { user: { id: user.id }, status: SaleStatus.PENDIENTE },
+    });
+    return count;
+  }
+
   private findErrorOnSaleDetails(details: SaleDetail[]) {
     const res: { availableCant: number; saleDetial: SaleDetail }[] = [];
     for (let i = 0; i < details.length; i++) {

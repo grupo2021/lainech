@@ -171,6 +171,21 @@ export class ReturnsService {
     return this.changeToCancelled(returns, status, description, user);
   }
 
+  public async getPendings(user: { role: string; id: number }) {
+    const [sales, count] = await this.returnsRepository.findAndCount({
+      relations: ['promotorProduct', 'promotorProduct.user'],
+      where:
+        user.role === 'PROMOTOR'
+          ? {
+              status: ReturnStatus.PENDIENTE,
+              promotorProduct: { user: { id: user.id } },
+            }
+          : { status: ReturnStatus.PENDIENTE },
+    });
+
+    return count;
+  }
+
   private async changeToCancelled(
     returns: Return,
     status: ReturnStatus,

@@ -34,6 +34,11 @@ export class ReturnsController {
     return this.returnsService.findAll(req.user, query);
   }
 
+  @Get('pending-count')
+  getPendings(@Request() req) {
+    return this.returnsService.getPendings(req.user);
+  }
+
   @Get(':id')
   findOne(@Param() params: FindOneReturnDto, @Request() req) {
     return this.returnsService.findOne(params.id, req.user);

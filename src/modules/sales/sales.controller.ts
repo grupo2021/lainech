@@ -36,6 +36,12 @@ export class SalesController {
     return this.salesService.findAll(req.user, query);
   }
 
+  @Get('pending-count')
+  @Roles(RoleOptions.Promotor, RoleOptions.Admin)
+  getPendings(@Request() req) {
+    return this.salesService.getPendings(req.user);
+  }
+
   @Post('approve/:id')
   approve(@Param() param: FindOneSaleDto, @Request() req) {
     return this.salesService.approve(param.id, req.user);
