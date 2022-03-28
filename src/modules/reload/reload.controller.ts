@@ -42,8 +42,8 @@ export class ReloadController {
   }
 
   @Get('pending-count/:id')
-  getPending(@Param('id') id) {
-    return this.reloadService.getPending(+id);
+  getPending(@Param('id') id, @Request() req) {
+    return this.reloadService.getPending(req.user);
   }
 
   @Roles(RoleOptions.Admin, RoleOptions.Almacenero)
